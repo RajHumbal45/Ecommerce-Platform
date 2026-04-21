@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import { Menu, Search, ShoppingBag, X } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/redux/store'
@@ -17,19 +17,10 @@ const navigation = [
 
 export function Header() {
 	const pathname = usePathname()
-	const searchParams = useSearchParams()
 	const [menuOpen, setMenuOpen] = useState(false)
 	const cartCount = useSelector((state: RootState) => state.cart.items.length)
 
-	const activePath = useMemo(() => {
-		const query = searchParams.toString()
-
-		if (pathname.startsWith('/products/')) {
-			return '/products'
-		}
-
-		return query ? `${pathname}?${query}` : pathname
-	}, [pathname, searchParams])
+	const activePath = pathname.startsWith('/products/') ? '/products' : pathname
 
 	return (
 		<header className='sticky top-0 z-40 border-b border-zinc-200/70 bg-white/80 backdrop-blur-xl'>
