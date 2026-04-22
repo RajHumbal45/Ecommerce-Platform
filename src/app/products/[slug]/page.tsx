@@ -1,4 +1,41 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { ProductDetail } from '@/components/product/product-detail'
+import { getRelatedProducts } from '@/data/products'
+import {
+	fetchCatalogProductBySlug,
+	fetchCatalogProducts
+} from '@/lib/products-api'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+	const products = await fetchCatalogProducts()
+
+	return products.map((product) => ({
+		slug: product.slug
+	}))
+}
+
+export async function generateMetadata({
+	params
+}: {
+	params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+	const { slug } = await params
+	const product = await fetchCatalogProductBySlug(slug)
+
+	if (!product) {
+		return {
+			title: 'Product not found'
+		}
+	}
+
+	return {
+		title: product.name,
+		description: product.description
+	}
+}
 
 export default async function ProductDetailPage({
 	params
@@ -6,22 +43,14 @@ export default async function ProductDetailPage({
 	params: Promise<{ slug: string }>
 }) {
 	const { slug } = await params
+	const product = await fetchCatalogProductBySlug(slug)
 
-	if (!slug) {
+	if (!product) {
 		notFound()
 	}
 
-	return (
-		<section className='space-y-4'>
-			<div>
-				<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>Product</p>
-				<h1 className='mt-2 text-3xl font-semibold text-zinc-950'>Detail view</h1>
-			</div>
-			<div className='rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-sm text-zinc-500'>
-				Product detail for <span className='font-medium text-zinc-950'>{slug}</span>{' '}
-				will be built in the next phase.
-			</div>
-		</section>
-	)
-}
+	const allProducts = await fetchCatalogProducts()
+	const relatedProducts = getRelatedProducts(allProducts, product.slug, product.category)
 
+	return <ProductDetail product={product} relatedProducts={relatedProducts} />
+}

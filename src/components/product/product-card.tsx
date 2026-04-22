@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowUpRight, BadgeCheck, Star } from 'lucide-react'
 import type { Product } from '@/data/products'
+import { formatCategoryLabel } from '@/data/products'
 import { formatCurrency } from '@/lib/format'
 
 interface ProductCardProps {
@@ -22,10 +24,18 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
 			className='group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl'
 		>
 			<div className='relative aspect-[4/5] overflow-hidden bg-[linear-gradient(180deg,#f6f2eb_0%,#ece3d7_100%)]'>
+				<Image
+					src={product.thumbnail}
+					alt={product.name}
+					fill
+					sizes='(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw'
+					className='object-cover transition duration-500 group-hover:scale-[1.04]'
+					priority={featured}
+				/>
 				<div className='absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(17,17,17,0.12),transparent_30%)]' />
 				<div className='absolute left-4 top-4 flex flex-wrap gap-2'>
 					<span className='rounded-full bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-700'>
-						{product.category}
+						{formatCategoryLabel(product.category)}
 					</span>
 					{featured ? (
 						<span className='rounded-full bg-zinc-950 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-white'>

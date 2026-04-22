@@ -1,6 +1,6 @@
-import { products } from '@/data/products'
+import { fetchCatalogProducts } from '@/lib/products-api'
 
 export async function fetchFilteredProductsRequest() {
-	return products
+	return fetchCatalogProducts()
 }
 

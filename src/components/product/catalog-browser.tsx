@@ -1,18 +1,19 @@
 'use client'
 
-import { useDeferredValue, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { ArrowRight, BadgeCheck, Filter, Search, Star } from 'lucide-react'
-import type { ProductSortKey } from '@/data/products'
+import type { Product, ProductSortKey } from '@/data/products'
 import {
 	filterAndSortProducts,
 	getCategories,
 	getProductCountByCategory,
 	getLowestPriceProduct,
-	getTopRatedProduct,
-	products
+	getTopRatedProduct
 } from '@/data/products'
-import { ProductGrid } from './product-grid'
+import { formatCategoryLabel } from '@/data/products'
 import { cn } from '@/lib/utils'
+import { ProductGrid } from './product-grid'
 
 const sortOptions: Array<{ label: string; value: ProductSortKey }> = [
 	{ label: 'Featured', value: 'featured' },
@@ -21,31 +22,100 @@ const sortOptions: Array<{ label: string; value: ProductSortKey }> = [
 	{ label: 'Top Rated', value: 'rating' }
 ]
 
-export function CatalogBrowser() {
-	const [query, setQuery] = useState('')
-	const [category, setCategory] = useState('all')
-	const [sort, setSort] = useState<ProductSortKey>('featured')
+interface CatalogBrowserProps {
+	products: Product[]
+	initialQuery?: string
+	initialCategory?: string
+	initialSort?: string
+}
+
+function normalizeSort(sort?: string): ProductSortKey {
+	return sortOptions.some((option) => option.value === sort) ? (sort as ProductSortKey) : 'featured'
+}
+
+function buildSearchParams({
+	query,
+	category,
+	sort
+}: {
+	query: string
+	category: string
+	sort: ProductSortKey
+}) {
+	const params = new URLSearchParams()
+
+	if (query.trim().length > 0) {
+		params.set('query', query.trim())
+	}
+
+	if (category !== 'all') {
+		params.set('category', category)
+	}
+
+	if (sort !== 'featured') {
+		params.set('sort', sort)
+	}
+
+	return params
+}
+
+export function CatalogBrowser({
+	products,
+	initialQuery = '',
+	initialCategory = 'all',
+	initialSort = 'featured'
+}: CatalogBrowserProps) {
+	const router = useRouter()
+	const pathname = usePathname()
+	const [query, setQuery] = useState(initialQuery)
+	const [category, setCategory] = useState(initialCategory)
+	const [sort, setSort] = useState<ProductSortKey>(normalizeSort(initialSort))
 	const deferredQuery = useDeferredValue(query)
 
-	const categories = getCategories()
-	const topRatedProduct = getTopRatedProduct()
-	const lowestPriceProduct = getLowestPriceProduct()
+	useEffect(() => {
+		setQuery(initialQuery)
+	}, [initialQuery])
+
+	useEffect(() => {
+		setCategory(initialCategory)
+	}, [initialCategory])
+
+	useEffect(() => {
+		setSort(normalizeSort(initialSort))
+	}, [initialSort])
+
+	useEffect(() => {
+		const params = buildSearchParams({ query, category, sort })
+		const nextSearch = params.toString()
+		const currentSearch = new URLSearchParams(window.location.search).toString()
+
+		if (nextSearch === currentSearch) {
+			return
+		}
+
+		const nextUrl = nextSearch.length > 0 ? `${pathname}?${nextSearch}` : pathname
+		router.replace(nextUrl, { scroll: false })
+	}, [category, pathname, query, router, sort])
+
+	const categories = getCategories(products)
+	const topRatedProduct = getTopRatedProduct(products)
+	const lowestPriceProduct = getLowestPriceProduct(products)
 	const selectedCategoryLabel =
 		category === 'all'
 			? 'All categories'
-			: categories.find((item) => item.toLowerCase() === category) ?? category
+			: formatCategoryLabel(categories.find((item) => item.toLowerCase() === category) ?? category)
 	const currentSortLabel =
 		sortOptions.find((option) => option.value === sort)?.label ?? 'Featured'
 
 	const filteredProducts = useMemo(
-		() => filterAndSortProducts({ query: deferredQuery, category, sort }),
-		[deferredQuery, category, sort]
+		() => filterAndSortProducts(products, { query: deferredQuery, category, sort }),
+		[products, deferredQuery, category, sort]
 	)
 
 	const activeLabel =
 		category === 'all'
 			? 'All products'
-			: `${category} (${getProductCountByCategory(category)})`
+			: `${selectedCategoryLabel} (${getProductCountByCategory(products, category)})`
 
 	return (
 		<div className='space-y-6'>
@@ -53,9 +123,7 @@ export function CatalogBrowser() {
 				<div className='grid gap-5 lg:grid-cols-[1.35fr_0.65fr]'>
 					<div className='space-y-4'>
 						<div>
-							<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>
-								Catalog
-							</p>
+							<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>Catalog</p>
 							<h1 className='mt-2 text-3xl font-semibold text-zinc-950'>Browse products</h1>
 							<p className='mt-2 max-w-2xl text-sm leading-6 text-zinc-600'>
 								Search, narrow by category, and sort by relevance or price.
@@ -102,11 +170,11 @@ export function CatalogBrowser() {
 
 							<div className='grid gap-3'>
 								<div className='flex flex-wrap gap-2'>
-										{[
+									{[
 										{ key: 'all', label: 'All' },
 										...categories.map((item) => ({
 											key: item.toLowerCase(),
-											label: `${item} (${getProductCountByCategory(item)})`
+											label: `${formatCategoryLabel(item)} (${getProductCountByCategory(products, item)})`
 										}))
 									].map((item) => (
 										<button
@@ -147,7 +215,7 @@ export function CatalogBrowser() {
 												Top rated
 											</div>
 											<p className='mt-2 text-sm text-zinc-600'>
-												{topRatedProduct.name}
+												{topRatedProduct?.name ?? 'Top rated product unavailable'}
 											</p>
 										</div>
 
@@ -157,7 +225,7 @@ export function CatalogBrowser() {
 												Best price
 											</div>
 											<p className='mt-2 text-sm text-zinc-600'>
-												{lowestPriceProduct.name}
+												{lowestPriceProduct?.name ?? 'Lowest priced product unavailable'}
 											</p>
 										</div>
 									</div>

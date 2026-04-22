@@ -1,25 +1,10 @@
 import Link from 'next/link'
-import { ArrowRight, BadgeCheck, Truck, ShieldCheck, Sparkles } from 'lucide-react'
-import { getFeaturedProducts, products } from '@/data/products'
+import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles, Truck } from 'lucide-react'
 import { ProductGrid } from '@/components/product/product-grid'
-
-const categories = [
-	{
-		name: 'Apparel',
-		href: '/products?category=apparel',
-		description: 'Clean layers, outerwear, and everyday staples.'
-	},
-	{
-		name: 'Footwear',
-		href: '/products?category=footwear',
-		description: 'Comfort-first silhouettes for daily wear.'
-	},
-	{
-		name: 'Accessories',
-		href: '/products?category=accessories',
-		description: 'Refined carry goods and finishing pieces.'
-	}
-]
+import {
+	fetchCatalogProducts
+} from '@/lib/products-api'
+import { formatCategoryLabel, getCategories, getFeaturedProducts } from '@/data/products'
 
 const trustItems = [
 	{
@@ -39,8 +24,19 @@ const trustItems = [
 	}
 ]
 
-export default function HomePage() {
-	const featuredProducts = getFeaturedProducts()
+export const revalidate = 3600
+
+export default async function HomePage() {
+	const products = await fetchCatalogProducts()
+	const featuredProducts = getFeaturedProducts(products)
+	const categories = getCategories(products).slice(0, 3)
+
+	const categoryCards = categories.map((category, index) => ({
+		name: formatCategoryLabel(category),
+		href: `/products?category=${category}`,
+		description: `Browse curated ${formatCategoryLabel(category).toLowerCase()} from the live catalog.`,
+		index
+	}))
 
 	return (
 		<div className='space-y-12'>
@@ -49,7 +45,7 @@ export default function HomePage() {
 					<div className='space-y-8'>
 						<div className='inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white/90 px-4 py-2 text-xs font-medium uppercase tracking-[0.3em] text-zinc-600 shadow-sm'>
 							<Sparkles className='size-4 text-zinc-950' />
-							New season launch
+							Live catalog feed
 						</div>
 						<div className='space-y-5'>
 							<h1 className='max-w-2xl text-4xl font-semibold tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl'>
@@ -57,7 +53,7 @@ export default function HomePage() {
 							</h1>
 							<p className='max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg'>
 								Curated products, fast discovery, and a clean checkout path,
-								designed to feel complete even before backend integration.
+								served directly from a free public API.
 							</p>
 						</div>
 						<div className='flex flex-wrap gap-3'>
@@ -80,7 +76,7 @@ export default function HomePage() {
 							{[
 								['24h', 'Average shipping'],
 								['4.8/5', 'Customer rating'],
-								['100%', 'Responsive layout']
+								[`${products.length}+`, 'Live products']
 							].map(([value, label]) => (
 								<div key={label} className='rounded-[1.25rem] border border-zinc-200 bg-white/80 p-4 shadow-sm backdrop-blur'>
 									<p className='text-2xl font-semibold text-zinc-950'>{value}</p>
@@ -115,8 +111,8 @@ export default function HomePage() {
 								Designed to support the buying journey from browse to checkout.
 							</p>
 							<p className='mt-2 text-sm leading-6 text-zinc-600'>
-								Started with a clean app shell and route structure. The next phase
-								expands into product browsing and discovery.
+								The product feed is sourced from DummyJSON and transformed into a
+								storefront-ready data model.
 							</p>
 						</div>
 					</div>
@@ -138,14 +134,14 @@ export default function HomePage() {
 				</div>
 
 				<div className='grid gap-4 md:grid-cols-3'>
-					{categories.map((category, index) => (
+					{categoryCards.map((category) => (
 						<Link
 							key={category.name}
 							href={category.href}
 							className='group rounded-[1.5rem] border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg'
 						>
 							<p className='text-sm uppercase tracking-[0.3em] text-zinc-500'>
-								0{index + 1}
+								0{category.index + 1}
 							</p>
 							<h3 className='mt-4 text-xl font-semibold text-zinc-950'>
 								{category.name}
@@ -219,4 +215,3 @@ export default function HomePage() {
 		</div>
 	)
 }
-
