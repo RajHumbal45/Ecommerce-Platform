@@ -4,6 +4,7 @@ import { ArrowUpRight, BadgeCheck, Star } from 'lucide-react'
 import type { Product } from '@/data/products'
 import { formatCategoryLabel } from '@/data/products'
 import { formatCurrency } from '@/lib/format'
+import { WishlistToggle } from '@/components/wishlist/wishlist-toggle'
 
 interface ProductCardProps {
 	product: Product
@@ -42,6 +43,9 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
 							Featured
 						</span>
 					) : null}
+				</div>
+				<div className='absolute right-4 top-4'>
+					<WishlistToggle product={product} />
 				</div>
 				<div className='absolute inset-x-4 bottom-4 rounded-[1.25rem] border border-white/60 bg-white/80 p-4 backdrop-blur'>
 					<p className='text-xs uppercase tracking-[0.3em] text-zinc-500'>In stock</p>

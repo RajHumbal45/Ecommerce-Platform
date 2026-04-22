@@ -20,6 +20,7 @@ import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { cartAddItem } from '@/redux/actions/cart/cartAction'
 import { ProductGrid } from './product-grid'
+import { WishlistToggle } from '@/components/wishlist/wishlist-toggle'
 
 interface ProductDetailProps {
 	product: Product
@@ -148,9 +149,16 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
 							<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>
 								{formatCategoryLabel(product.category)}
 							</p>
-							<h1 className='mt-3 text-4xl font-semibold tracking-tight text-zinc-950'>
-								{product.name}
-							</h1>
+							<div className='mt-3 flex flex-wrap items-start justify-between gap-3'>
+								<h1 className='text-4xl font-semibold tracking-tight text-zinc-950'>
+									{product.name}
+								</h1>
+								<WishlistToggle
+									product={product}
+									className='border-zinc-200 bg-white text-zinc-600 hover:border-zinc-950 hover:text-zinc-950'
+									label='Save this product'
+								/>
+							</div>
 							<p className='mt-4 max-w-2xl text-base leading-7 text-zinc-600'>
 								{product.description}
 							</p>

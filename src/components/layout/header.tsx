@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { Menu, Search, ShoppingBag, X } from 'lucide-react'
+import { Heart, Menu, Search, ShoppingBag, X } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/redux/store'
 import { cn } from '@/lib/utils'
@@ -12,6 +12,7 @@ const navigation = [
 	{ href: '/products', label: 'Products' },
 	{ href: '/products?category=apparel', label: 'Apparel' },
 	{ href: '/products?category=accessories', label: 'Accessories' },
+	{ href: '/wishlist', label: 'Wishlist' },
 	{ href: '/checkout', label: 'Checkout' }
 ]
 
@@ -21,6 +22,7 @@ export function Header() {
 	const cartCount = useSelector((state: RootState) =>
 		state.cart.items.reduce((total, item) => total + item.quantity, 0)
 	)
+	const wishlistCount = useSelector((state: RootState) => state.wishlist.items.length)
 
 	const activePath = pathname.startsWith('/products/') ? '/products' : pathname
 
@@ -79,6 +81,18 @@ export function Header() {
 				</nav>
 
 				<div className='hidden items-center gap-2 lg:flex'>
+					<Link
+						href='/wishlist'
+						className='relative grid size-11 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 transition hover:border-zinc-950'
+						aria-label='View wishlist'
+					>
+						<Heart className='size-4' />
+						{wishlistCount > 0 ? (
+							<span className='absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white'>
+								{wishlistCount}
+							</span>
+						) : null}
+					</Link>
 					<Link
 						href='/cart'
 						className='relative grid size-11 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 transition hover:border-zinc-950'
@@ -142,6 +156,13 @@ export function Header() {
 								className='rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-center text-sm font-medium text-zinc-950'
 							>
 								Browse
+							</Link>
+							<Link
+								href='/wishlist'
+								onClick={() => setMenuOpen(false)}
+								className='rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-center text-sm font-medium text-zinc-950'
+							>
+								Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}
 							</Link>
 							<Link
 								href='/cart'

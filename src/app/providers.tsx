@@ -8,10 +8,12 @@ import {
 	checkoutHydrate,
 	type CheckoutSuccessPayload
 } from '@/redux/actions/checkout/checkoutAction'
+import { wishlistHydrate } from '@/redux/actions/wishlist/wishlistAction'
 import type { RootState } from '@/redux/store'
 
 const CART_STORAGE_KEY = 'ecom-studio-cart'
 const CHECKOUT_STORAGE_KEY = 'ecom-studio-checkout'
+const WISHLIST_STORAGE_KEY = 'ecom-studio-wishlist'
 
 function isCheckoutSuccessPayload(value: unknown): value is CheckoutSuccessPayload {
 	return (
@@ -102,6 +104,41 @@ function CheckoutPersistence() {
 	return null
 }
 
+function WishlistPersistence() {
+	const dispatch = useDispatch()
+	const items = useSelector((state: RootState) => state.wishlist.items)
+	const hydratedRef = useRef(false)
+
+	useEffect(() => {
+		try {
+			const storedWishlist = window.localStorage.getItem(WISHLIST_STORAGE_KEY)
+			if (!storedWishlist) {
+				hydratedRef.current = true
+				return
+			}
+
+			const parsed = JSON.parse(storedWishlist) as unknown
+			if (Array.isArray(parsed)) {
+				dispatch(wishlistHydrate(parsed))
+			}
+		} catch {
+			window.localStorage.removeItem(WISHLIST_STORAGE_KEY)
+		} finally {
+			hydratedRef.current = true
+		}
+	}, [dispatch])
+
+	useEffect(() => {
+		if (!hydratedRef.current) {
+			return
+		}
+
+		window.localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items))
+	}, [items])
+
+	return null
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
 	const storeRef = useRef<ReturnType<typeof makeStore> | null>(null)
 
@@ -113,6 +150,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 		<Provider store={storeRef.current}>
 			<CartPersistence />
 			<CheckoutPersistence />
+			<WishlistPersistence />
 			{children}
 		</Provider>
 	)
