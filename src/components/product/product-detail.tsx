@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import {
 	ArrowLeft,
 	BadgeCheck,
@@ -17,6 +18,7 @@ import type { Product } from '@/data/products'
 import { formatCategoryLabel } from '@/data/products'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { cartAddItem } from '@/redux/actions/cart/cartAction'
 import { ProductGrid } from './product-grid'
 
 interface ProductDetailProps {
@@ -25,6 +27,7 @@ interface ProductDetailProps {
 }
 
 export function ProductDetail({ product, relatedProducts }: ProductDetailProps) {
+	const dispatch = useDispatch()
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 	const [quantity, setQuantity] = useState(1)
 	const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>(
@@ -280,6 +283,15 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
 							<button
 								type='button'
 								disabled={isSoldOut}
+								onClick={() =>
+									dispatch(
+										cartAddItem({
+											product,
+											quantity,
+											selectedVariants
+										})
+									)
+								}
 								className={cn(
 									'rounded-full px-5 py-3 text-sm font-medium text-zinc-950 transition',
 									isSoldOut

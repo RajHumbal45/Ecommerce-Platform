@@ -18,7 +18,9 @@ const navigation = [
 export function Header() {
 	const pathname = usePathname()
 	const [menuOpen, setMenuOpen] = useState(false)
-	const cartCount = useSelector((state: RootState) => state.cart.items.length)
+	const cartCount = useSelector((state: RootState) =>
+		state.cart.items.reduce((total, item) => total + item.quantity, 0)
+	)
 
 	const activePath = pathname.startsWith('/products/') ? '/products' : pathname
 
