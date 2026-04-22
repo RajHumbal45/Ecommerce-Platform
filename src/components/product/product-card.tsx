@@ -11,6 +11,10 @@ interface ProductCardProps {
 export function ProductCard({ product, featured = false }: ProductCardProps) {
 	const hasDiscount = typeof product.discountPrice === 'number'
 	const displayPrice: number = product.discountPrice ?? product.price
+	const savings =
+		hasDiscount && typeof product.discountPrice === 'number'
+			? product.price - product.discountPrice
+			: 0
 
 	return (
 		<Link
@@ -34,14 +38,17 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
 					<div className='mt-2 flex items-center justify-between gap-3'>
 						<div>
 							<p className='text-sm font-medium text-zinc-950'>{product.stock} units</p>
-							<p className='text-xs text-zinc-500'>
-								{product.reviewCount} reviews
-							</p>
+							<p className='text-xs text-zinc-500'>{product.reviewCount} reviews</p>
 						</div>
 						<div className='grid size-10 place-items-center rounded-full bg-zinc-950 text-white'>
 							<ArrowUpRight className='size-4' />
 						</div>
 					</div>
+					{hasDiscount ? (
+						<p className='mt-3 text-xs uppercase tracking-[0.25em] text-emerald-700'>
+							Save {formatCurrency(savings)}
+						</p>
+					) : null}
 				</div>
 			</div>
 
@@ -78,7 +85,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
 					</div>
 
 					<span className='rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-950 transition group-hover:border-zinc-950'>
-						View
+						View details
 					</span>
 				</div>
 			</div>

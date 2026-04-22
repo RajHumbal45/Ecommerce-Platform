@@ -123,3 +123,65 @@ export function getFeaturedProducts() {
 	return products.slice(0, 4)
 }
 
+export function getTopRatedProduct() {
+	return [...products].sort((first, second) => second.rating - first.rating)[0]
+}
+
+export function getLowestPriceProduct() {
+	return [...products].sort(
+		(first, second) => (first.discountPrice ?? first.price) - (second.discountPrice ?? second.price)
+	)[0]
+}
+
+export function getCategories() {
+	return Array.from(new Set(products.map((product) => product.category)))
+}
+
+export type ProductSortKey = 'featured' | 'price-low' | 'price-high' | 'rating'
+
+export function filterAndSortProducts({
+	query = '',
+	category = 'all',
+	sort = 'featured'
+}: {
+	query?: string
+	category?: string
+	sort?: ProductSortKey
+}) {
+	const normalizedQuery = query.trim().toLowerCase()
+
+	let result = products.filter((product) => {
+		const matchesQuery =
+			normalizedQuery.length === 0 ||
+			product.name.toLowerCase().includes(normalizedQuery) ||
+			product.description.toLowerCase().includes(normalizedQuery) ||
+			product.category.toLowerCase().includes(normalizedQuery)
+		const matchesCategory = category === 'all' || product.category.toLowerCase() === category
+
+		return matchesQuery && matchesCategory
+	})
+
+	if (sort === 'price-low') {
+		result = [...result].sort(
+			(first, second) => (first.discountPrice ?? first.price) - (second.discountPrice ?? second.price)
+		)
+	}
+
+	if (sort === 'price-high') {
+		result = [...result].sort(
+			(first, second) => (second.discountPrice ?? second.price) - (first.discountPrice ?? first.price)
+		)
+	}
+
+	if (sort === 'rating') {
+		result = [...result].sort((first, second) => second.rating - first.rating)
+	}
+
+	return result
+}
+
+export function getProductCountByCategory(category: string) {
+	return products.filter((product) => product.category.toLowerCase() === category.toLowerCase())
+		.length
+}
+
