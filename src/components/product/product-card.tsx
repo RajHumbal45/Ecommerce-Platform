@@ -109,7 +109,7 @@ function ProductCardBase({
 	return (
 			<article
 			className={cn(
-				'group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl',
+				'group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl [content-visibility:auto] [contain-intrinsic-size:0_430px]',
 				compact ? 'min-h-[310px] w-[224px] min-w-[224px] shrink-0 snap-start sm:w-[240px] sm:min-w-[240px]' : ''
 			)}
 		>

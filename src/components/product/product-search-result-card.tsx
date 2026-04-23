@@ -80,7 +80,7 @@ function ProductSearchResultCardBase({ product, query = '' }: ProductSearchResul
 		hasDiscount && typeof product.discountPrice === 'number' ? product.price - product.discountPrice : 0
 
 	return (
-		<article className='grid gap-2.5 rounded-[1.4rem] border border-zinc-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfaf8_100%)] p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md md:grid-cols-[150px_1fr] md:gap-3.5 md:p-4'>
+		<article className='grid gap-2.5 rounded-[1.4rem] border border-zinc-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfaf8_100%)] p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md [content-visibility:auto] [contain-intrinsic-size:0_250px] md:grid-cols-[150px_1fr] md:gap-3.5 md:p-4'>
 			<Link href={`/products/${product.slug}`} className='block'>
 				<div className='relative aspect-[0.9/1] overflow-hidden rounded-[1.05rem] bg-[linear-gradient(180deg,#f7f2eb_0%,#e8dfd0_100%)] md:aspect-square md:rounded-[1.15rem]'>
 					<Image
