@@ -1,6 +1,6 @@
 'use client'
 
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
+import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { ArrowRight, Filter, Menu, X } from 'lucide-react'
 import type { Product, ProductSortKey } from '@/data/products'
@@ -126,7 +126,9 @@ export function CatalogBrowser({
 		}
 
 		const nextUrl = nextSearch.length > 0 ? `${pathname}?${nextSearch}` : pathname
-		router.replace(nextUrl, { scroll: false })
+		startTransition(() => {
+			router.replace(nextUrl, { scroll: false })
+		})
 	}, [category, pathname, query, router, sort])
 
 	const categories = useMemo(() => getCategories(products), [products])

@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -61,9 +61,10 @@ export function HomeSearchAutocomplete({ products, compact = false, stretch = fa
 	const [query, setQuery] = useState('')
 	const [isOpen, setIsOpen] = useState(false)
 	const [activeIndex, setActiveIndex] = useState(-1)
+	const deferredQuery = useDeferredValue(query)
 
 	const suggestions = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase()
+		const normalizedQuery = deferredQuery.trim().toLowerCase()
 		const source = products.filter((product) => ALLOWED_CATEGORIES.has(product.category.toLowerCase()))
 		const filtered =
 			normalizedQuery.length > 0
@@ -76,9 +77,9 @@ export function HomeSearchAutocomplete({ products, compact = false, stretch = fa
 				: source
 
 		return filtered.slice(0, SUGGESTION_LIMIT)
-	}, [products, query])
+	}, [deferredQuery, products])
 
-	const trimmedQuery = query.trim()
+	const trimmedQuery = deferredQuery.trim()
 	const hasQuery = trimmedQuery.length > 0
 
 	function navigateToSearch(searchTerm: string) {
@@ -133,7 +134,7 @@ export function HomeSearchAutocomplete({ products, compact = false, stretch = fa
 
 	useEffect(() => {
 		setActiveIndex(suggestions.length > 0 ? 0 : -1)
-	}, [query, suggestions.length])
+	}, [deferredQuery, suggestions.length])
 
 	const wrapperSizeClass = compact
 		? 'w-[min(440px,calc(100vw-24rem))]'
@@ -269,7 +270,7 @@ export function HomeSearchAutocomplete({ products, compact = false, stretch = fa
 												index === activeIndex ? 'text-white' : 'text-zinc-950'
 											)}
 										>
-											<HighlightedMatch text={product.name} query={query} />
+											<HighlightedMatch text={product.name} query={deferredQuery} />
 										</p>
 										<p
 											className={cn(

@@ -1,6 +1,17 @@
+import dynamic from 'next/dynamic'
 import type { Product } from '@/data/products'
 import { ProductCard } from './product-card'
-import { ProductCarousel } from './product-carousel'
+
+const ProductCarousel = dynamic(
+	() => import('./product-carousel').then((module) => module.ProductCarousel),
+	{
+		loading: () => (
+			<div className='rounded-[2rem] border border-zinc-200 bg-white p-4 shadow-sm sm:p-5'>
+				<div className='h-[320px] animate-pulse rounded-[1.5rem] bg-zinc-100' />
+			</div>
+		)
+	}
+)
 
 interface ProductGridProps {
 	products: Product[]
