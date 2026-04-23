@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowRight, BadgeCheck, ShieldCheck, Truck } from 'lucide-react'
 import { checkoutSubmitRequest } from '@/redux/actions/checkout/checkoutAction'
+import { cartClear } from '@/redux/actions/cart/cartAction'
 import { formatCurrency } from '@/lib/format'
 import { formatCategoryLabel } from '@/data/products'
 import { cn } from '@/lib/utils'
@@ -52,9 +53,10 @@ export function CheckoutPage() {
 
 	useEffect(() => {
 		if (orderId) {
+			dispatch(cartClear())
 			router.push(`/success?order=${orderId}`)
 		}
-	}, [orderId, router])
+	}, [dispatch, orderId, router])
 
 	const canSubmit = cartItems.length > 0 && !isSubmitting
 	const formId = 'checkout-form'

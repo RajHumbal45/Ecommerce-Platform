@@ -206,8 +206,8 @@ export function CartPage() {
 						</div>
 					</div>
 
-					<aside className='space-y-4'>
-						<div className='rounded-[1.75rem] border border-zinc-200 bg-white p-5 shadow-sm'>
+					<aside className='space-y-4 lg:sticky lg:top-24'>
+						<div className='rounded-[1.75rem] border border-zinc-200 bg-white p-5 shadow-sm lg:min-h-full'>
 							<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>Summary</p>
 							<div className='mt-4 space-y-3 text-sm'>
 								<div className='flex items-center justify-between text-zinc-600'>
@@ -242,14 +242,6 @@ export function CartPage() {
 							</Link>
 						</div>
 
-						<div className='rounded-[1.75rem] border border-zinc-200 bg-[linear-gradient(180deg,#111827_0%,#030712_100%)] p-5 text-white shadow-sm'>
-							<p className='text-xs uppercase tracking-[0.35em] text-zinc-400'>Why this cart works</p>
-							<p className='mt-3 text-lg font-semibold'>Persistent, variant-aware, and ready for checkout.</p>
-							<p className='mt-2 text-sm leading-6 text-zinc-300'>
-								Selections survive reloads, item quantities stay in sync, and the total cost updates
-								without relying on a backend.
-							</p>
-						</div>
 					</aside>
 				</div>
 			) : (
