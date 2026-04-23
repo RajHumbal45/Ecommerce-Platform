@@ -3,6 +3,8 @@
 :root {
 	--background: #faf8f4;
 	--foreground: #111111;
+	--font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
+	--font-display: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', serif;
 }
 
 ::selection {
@@ -25,7 +27,29 @@ body {
 		radial-gradient(circle at top right, rgba(17, 17, 17, 0.04), transparent 20%),
 		var(--background);
 	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: var(--font-body);
+}
+
+html,
+body {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+	display: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.display-font {
+	font-family: var(--font-display);
+	letter-spacing: -0.02em;
 }
 
 a {
@@ -33,10 +57,28 @@ a {
 	text-decoration: none;
 }
 
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+	
+	outline-offset: 3px;
+}
+
 .page-grid {
 	background-image:
 		linear-gradient(rgba(17, 17, 17, 0.03) 1px, transparent 1px),
 		linear-gradient(90deg, rgba(17, 17, 17, 0.03) 1px, transparent 1px);
 	background-size: 32px 32px;
+}
+
+.no-scrollbar {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
 }
 

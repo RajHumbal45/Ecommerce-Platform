@@ -57,6 +57,8 @@ export function CheckoutPage() {
 	}, [orderId, router])
 
 	const canSubmit = cartItems.length > 0 && !isSubmitting
+	const formId = 'checkout-form'
+	const errorId = 'checkout-error'
 
 	return (
 		<div className='space-y-8'>
@@ -91,6 +93,9 @@ export function CheckoutPage() {
 				<div className='grid gap-6 lg:grid-cols-[1.05fr_0.95fr]'>
 					<form
 						className='space-y-5 rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm'
+						aria-busy={isSubmitting}
+						aria-describedby={error ? errorId : undefined}
+						id={formId}
 						onSubmit={(event) => {
 							event.preventDefault()
 
@@ -117,8 +122,12 @@ export function CheckoutPage() {
 
 						<div className='grid gap-4 sm:grid-cols-2'>
 							<label className='space-y-2 sm:col-span-2'>
-								<span className='text-sm font-medium text-zinc-950'>Full name</span>
+								<span className='text-sm font-medium text-zinc-950'>
+									Full name <span aria-hidden='true'>*</span>
+								</span>
 								<input
+									id='checkout-full-name'
+									name='fullName'
 									required
 									value={formData.contactName}
 									onChange={(event) =>
@@ -129,8 +138,12 @@ export function CheckoutPage() {
 							</label>
 
 							<label className='space-y-2 sm:col-span-2'>
-								<span className='text-sm font-medium text-zinc-950'>Email</span>
+								<span className='text-sm font-medium text-zinc-950'>
+									Email <span aria-hidden='true'>*</span>
+								</span>
 								<input
+									id='checkout-email'
+									name='email'
 									type='email'
 									required
 									value={formData.email}
@@ -142,8 +155,12 @@ export function CheckoutPage() {
 							</label>
 
 							<label className='space-y-2 sm:col-span-2'>
-								<span className='text-sm font-medium text-zinc-950'>Address</span>
+								<span className='text-sm font-medium text-zinc-950'>
+									Address <span aria-hidden='true'>*</span>
+								</span>
 								<input
+									id='checkout-address'
+									name='addressLine1'
 									required
 									value={formData.addressLine1}
 									onChange={(event) =>
@@ -154,8 +171,12 @@ export function CheckoutPage() {
 							</label>
 
 							<label className='space-y-2'>
-								<span className='text-sm font-medium text-zinc-950'>City</span>
+								<span className='text-sm font-medium text-zinc-950'>
+									City <span aria-hidden='true'>*</span>
+								</span>
 								<input
+									id='checkout-city'
+									name='city'
 									required
 									value={formData.city}
 									onChange={(event) =>
@@ -166,8 +187,12 @@ export function CheckoutPage() {
 							</label>
 
 							<label className='space-y-2'>
-								<span className='text-sm font-medium text-zinc-950'>Postal code</span>
+								<span className='text-sm font-medium text-zinc-950'>
+									Postal code <span aria-hidden='true'>*</span>
+								</span>
 								<input
+									id='checkout-postal-code'
+									name='postalCode'
 									required
 									value={formData.postalCode}
 									onChange={(event) =>
@@ -180,6 +205,8 @@ export function CheckoutPage() {
 							<label className='space-y-2'>
 								<span className='text-sm font-medium text-zinc-950'>Country</span>
 								<select
+									id='checkout-country'
+									name='country'
 									value={formData.country}
 									onChange={(event) =>
 										setFormData((current) => ({ ...current, country: event.target.value }))
@@ -196,6 +223,8 @@ export function CheckoutPage() {
 							<label className='space-y-2'>
 								<span className='text-sm font-medium text-zinc-950'>Payment method</span>
 								<select
+									id='checkout-payment-method'
+									name='paymentMethod'
 									value={formData.paymentMethod}
 									onChange={(event) =>
 										setFormData((current) => ({ ...current, paymentMethod: event.target.value }))
@@ -210,11 +239,13 @@ export function CheckoutPage() {
 
 							<label className='space-y-2 sm:col-span-2'>
 								<span className='text-sm font-medium text-zinc-950'>Shipping method</span>
-								<div className='grid gap-3 sm:grid-cols-2'>
+								<div className='grid gap-3 sm:grid-cols-2' role='radiogroup' aria-label='Shipping method'>
 									{['Standard', 'Express'].map((method) => (
 										<button
 											key={method}
 											type='button'
+											aria-pressed={formData.shippingMethod === method}
+											aria-label={`${method} shipping`}
 											onClick={() => setFormData((current) => ({ ...current, shippingMethod: method }))}
 											className={cn(
 												'rounded-2xl border px-4 py-3 text-left text-sm font-medium transition',
@@ -258,7 +289,7 @@ export function CheckoutPage() {
 						</div>
 
 						{error ? (
-							<p className='rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'>
+							<p id={errorId} role='alert' className='rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'>
 								{error}
 							</p>
 						) : null}
@@ -267,10 +298,10 @@ export function CheckoutPage() {
 							type='submit'
 							disabled={!canSubmit}
 							className={cn(
-								'w-full rounded-full px-5 py-3 text-sm font-medium transition',
+								'w-full rounded-full border px-5 py-3 text-sm font-medium transition',
 								canSubmit
-									? 'cursor-pointer bg-zinc-950 text-white hover:bg-zinc-800'
-									: 'cursor-not-allowed bg-zinc-200 text-zinc-500'
+									? 'cursor-pointer border-zinc-950 bg-white text-zinc-950 hover:border-zinc-700 hover:bg-zinc-50'
+									: 'cursor-not-allowed border-zinc-200 bg-zinc-100 text-zinc-500'
 							)}
 						>
 							{isSubmitting ? 'Placing order...' : 'Place order'}
@@ -344,7 +375,7 @@ export function CheckoutPage() {
 					<div className='mt-6 flex justify-center'>
 						<Link
 							href='/products'
-							className='inline-flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800'
+							className='inline-flex items-center gap-2 rounded-full border border-zinc-950 bg-white px-5 py-3 text-sm font-medium text-zinc-950 transition hover:border-zinc-700 hover:bg-zinc-50'
 						>
 							Shop products
 							<ArrowRight className='size-4' />

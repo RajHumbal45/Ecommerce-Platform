@@ -73,8 +73,9 @@ export function mapDummyJsonProduct(product: DummyJsonProduct): Product {
 		(image, index) => toProductImage(image, index, product.title)
 	)
 	const reviewCount = product.reviews.length
+	const brand = product.brand ?? ''
 	const features = [
-		product.brand,
+		brand,
 		product.shippingInformation,
 		product.returnPolicy
 	].filter(Boolean)
@@ -94,7 +95,7 @@ export function mapDummyJsonProduct(product: DummyJsonProduct): Product {
 		images,
 		variants: buildVariants(product),
 		thumbnail: product.thumbnail,
-		brand: product.brand,
+		brand,
 		shippingInformation: product.shippingInformation,
 		warrantyInformation: product.warrantyInformation,
 		returnPolicy: product.returnPolicy,

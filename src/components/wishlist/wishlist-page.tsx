@@ -131,7 +131,7 @@ export function WishlistPage() {
 					<div className='mt-6 flex flex-wrap justify-center gap-3'>
 						<Link
 							href='/products'
-							className='inline-flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800'
+							className='inline-flex items-center gap-2 rounded-full border border-zinc-950 bg-white px-5 py-3 text-sm font-medium text-zinc-950 transition hover:border-zinc-700 hover:bg-zinc-50'
 						>
 							Browse products
 							<ArrowRight className='size-4' />

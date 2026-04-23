@@ -156,6 +156,7 @@ export function CartPage() {
 													<div className='flex items-center gap-3'>
 														<button
 															type='button'
+															aria-label={`Decrease quantity for ${item.product.name}`}
 															disabled={!canDecrease}
 															onClick={() =>
 																dispatch(
@@ -179,6 +180,7 @@ export function CartPage() {
 														</p>
 														<button
 															type='button'
+															aria-label={`Increase quantity for ${item.product.name}`}
 															onClick={() =>
 																dispatch(
 																	cartUpdateQuantity({
@@ -230,7 +232,7 @@ export function CartPage() {
 
 							<Link
 								href='/checkout'
-								className='mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800'
+								className='mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-zinc-950 bg-white px-5 py-3 text-sm font-medium text-zinc-950 transition hover:border-zinc-700 hover:bg-zinc-50'
 							>
 								Proceed to checkout
 								<ArrowRight className='size-4' />
@@ -260,7 +262,7 @@ export function CartPage() {
 					<div className='mt-6 flex flex-wrap justify-center gap-3'>
 						<Link
 							href='/products'
-							className='inline-flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800'
+							className='inline-flex items-center gap-2 rounded-full border border-zinc-950 bg-white px-5 py-3 text-sm font-medium text-zinc-950 transition hover:border-zinc-700 hover:bg-zinc-50'
 						>
 							Shop products
 							<ArrowRight className='size-4' />

@@ -23,9 +23,15 @@ interface WishlistToggleProps {
 	>
 	className?: string
 	label?: string
+	compact?: boolean
 }
 
-export function WishlistToggle({ product, className, label = 'Save to wishlist' }: WishlistToggleProps) {
+export function WishlistToggle({
+	product,
+	className,
+	label = 'Save to wishlist',
+	compact = false
+}: WishlistToggleProps) {
 	const dispatch = useAppDispatch()
 	const items = useAppSelector(selectWishlistItems)
 	const isSaved = items.some((item) => item.product.slug === product.slug)
@@ -41,15 +47,16 @@ export function WishlistToggle({ product, className, label = 'Save to wishlist' 
 			aria-pressed={isSaved}
 			aria-label={isSaved ? 'Remove from wishlist' : label}
 			className={cn(
-				'inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition',
+				'inline-flex items-center gap-2 rounded-full border text-xs font-medium transition',
+				compact ? 'h-7 w-7 justify-center p-0' : 'px-3 py-2',
 				isSaved
 					? 'border-rose-500 bg-rose-500 text-white'
 					: 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-950 hover:text-zinc-950',
 				className
 			)}
 		>
-			<Heart className={cn('size-3.5', isSaved && 'fill-current')} />
-			<span>{isSaved ? 'Saved' : 'Save'}</span>
+			<Heart className={cn(compact ? 'size-[0.72rem]' : 'size-3.5', isSaved && 'fill-current')} />
+			<span className={compact ? 'sr-only' : ''}>{isSaved ? 'Saved' : 'Save'}</span>
 		</button>
 	)
 }

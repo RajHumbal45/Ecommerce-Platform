@@ -22,7 +22,7 @@ export function SuccessPage() {
 				<div className='mt-6 flex justify-center'>
 					<Link
 						href='/products'
-						className='inline-flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800'
+						className='inline-flex items-center gap-2 rounded-full border border-zinc-950 bg-white px-5 py-3 text-sm font-medium text-zinc-950 transition hover:border-zinc-700 hover:bg-zinc-50'
 					>
 						Shop products
 						<ArrowRight className='size-4' />
@@ -97,7 +97,7 @@ export function SuccessPage() {
 				</section>
 
 				<aside className='space-y-4'>
-					<div className='rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm'>
+						<div className='rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm'>
 						<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>Customer</p>
 						<div className='mt-4 space-y-3 text-sm'>
 							<div>
@@ -148,7 +148,7 @@ export function SuccessPage() {
 						<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>Continue shopping</p>
 						<Link
 							href='/products'
-							className='mt-4 inline-flex items-center gap-2 text-sm font-medium text-zinc-950 underline-offset-4 hover:underline'
+							className='mt-4 inline-flex items-center gap-2 rounded-full border border-zinc-950 bg-white px-5 py-3 text-sm font-medium text-zinc-950 transition hover:border-zinc-700 hover:bg-zinc-50'
 						>
 							Back to catalog
 							<ArrowRight className='size-4' />

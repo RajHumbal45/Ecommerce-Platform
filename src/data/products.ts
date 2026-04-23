@@ -99,14 +99,20 @@ export function filterAndSortProducts(
 	const normalizedQuery = query.trim().toLowerCase()
 
 	let result = products.filter((product) => {
+		const normalizedName = product.name?.toLowerCase() ?? ''
+		const normalizedDescription = product.description?.toLowerCase() ?? ''
+		const normalizedCategory = product.category?.toLowerCase() ?? ''
+		const normalizedBrand = product.brand?.toLowerCase() ?? ''
+		const normalizedTags = Array.isArray(product.tags) ? product.tags : []
+
 		const matchesQuery =
 			normalizedQuery.length === 0 ||
-			product.name.toLowerCase().includes(normalizedQuery) ||
-			product.description.toLowerCase().includes(normalizedQuery) ||
-			product.category.toLowerCase().includes(normalizedQuery) ||
-			product.brand.toLowerCase().includes(normalizedQuery) ||
-			product.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery))
-		const matchesCategory = category === 'all' || product.category.toLowerCase() === category
+			normalizedName.includes(normalizedQuery) ||
+			normalizedDescription.includes(normalizedQuery) ||
+			normalizedCategory.includes(normalizedQuery) ||
+			normalizedBrand.includes(normalizedQuery) ||
+			normalizedTags.some((tag) => tag.toLowerCase().includes(normalizedQuery))
+		const matchesCategory = category === 'all' || normalizedCategory === category
 
 		return matchesQuery && matchesCategory
 	})
