@@ -9,6 +9,7 @@ coverage
 .env.test.local
 .env.production.local
 *.log
+tsconfig.tsbuildinfo
 AGENT.md
 implementation-plan.md
 
