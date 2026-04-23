@@ -1,15 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useSelector } from 'react-redux'
 import { BadgeCheck, ArrowRight, Truck, ShieldCheck } from 'lucide-react'
-import type { RootState } from '@/redux/store'
 import { formatCurrency } from '@/lib/format'
 import { formatCategoryLabel } from '@/data/products'
+import { selectCheckoutOrder, selectCheckoutOrderId } from '@/redux/selectors'
+import { useAppSelector } from '@/redux/hooks'
 
 export function SuccessPage() {
-	const orderId = useSelector((state: RootState) => state.checkout.orderId)
-	const order = useSelector((state: RootState) => state.checkout.order)
+	const orderId = useAppSelector(selectCheckoutOrderId)
+	const order = useAppSelector(selectCheckoutOrder)
 
 	if (!orderId || !order) {
 		return (

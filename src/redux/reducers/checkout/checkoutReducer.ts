@@ -3,6 +3,7 @@ import {
 	CHECKOUT_SUBMIT_FAILURE,
 	CHECKOUT_SUBMIT_REQUEST,
 	CHECKOUT_SUBMIT_SUCCESS,
+	type CheckoutAction,
 	type CheckoutSuccessPayload
 } from '@/redux/actions/checkout/checkoutAction'
 
@@ -22,25 +23,18 @@ const initialState: CheckoutState = {
 
 export function checkoutReducer(
 	state = initialState,
-	action:
-		| { type: string; payload?: CheckoutSuccessPayload | string | null }
-		| { type: string; payload?: unknown }
+	action: CheckoutAction
 ): CheckoutState {
 	switch (action.type) {
 		case CHECKOUT_SUBMIT_REQUEST:
 			return { ...state, submitting: true, error: null }
 		case CHECKOUT_SUBMIT_SUCCESS: {
-			const payload = action.payload as CheckoutSuccessPayload | undefined
-
-			if (!payload) {
-				return state
-			}
-
 			return {
 				...state,
 				submitting: false,
-				orderId: payload.orderId,
-				order: payload.order
+				error: null,
+				orderId: action.payload.orderId,
+				order: action.payload.order
 			}
 		}
 		case CHECKOUT_SUBMIT_FAILURE:
@@ -50,16 +44,16 @@ export function checkoutReducer(
 				error: typeof action.payload === 'string' ? action.payload : 'Checkout failed'
 			}
 		case CHECKOUT_HYDRATE: {
-			const payload = action.payload as CheckoutSuccessPayload | null | undefined
-
-			if (!payload) {
+			if (!action.payload) {
 				return initialState
 			}
 
 			return {
 				...state,
-				orderId: payload.orderId,
-				order: payload.order
+				submitting: false,
+				error: null,
+				orderId: action.payload.orderId,
+				order: action.payload.order
 			}
 		}
 		default:

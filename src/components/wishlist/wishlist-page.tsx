@@ -3,15 +3,15 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Heart, ShoppingBag, Trash2 } from 'lucide-react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from '@/redux/store'
 import { wishlistClear, wishlistToggleItem } from '@/redux/actions/wishlist/wishlistAction'
 import { formatCategoryLabel } from '@/data/products'
 import { formatCurrency } from '@/lib/format'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { selectWishlistItems } from '@/redux/selectors'
 
 export function WishlistPage() {
-	const dispatch = useDispatch()
-	const items = useSelector((state: RootState) => state.wishlist.items)
+	const dispatch = useAppDispatch()
+	const items = useAppSelector(selectWishlistItems)
 
 	return (
 		<div className='space-y-8'>
@@ -80,7 +80,7 @@ export function WishlistPage() {
 												{item.product.name}
 											</Link>
 											<p className='text-sm leading-6 text-zinc-600'>
-												{item.product.rating.toFixed(1)} rating · {item.product.reviewCount} reviews
+												{item.product.rating.toFixed(1)} rating | {item.product.reviewCount} reviews
 											</p>
 										</div>
 

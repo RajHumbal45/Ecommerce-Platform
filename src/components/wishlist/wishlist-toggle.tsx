@@ -1,10 +1,10 @@
 'use client'
 
 import { Heart } from 'lucide-react'
-import { useDispatch, useSelector } from 'react-redux'
 import type { Product } from '@/data/products'
-import type { RootState } from '@/redux/store'
 import { wishlistToggleItem } from '@/redux/actions/wishlist/wishlistAction'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { selectWishlistItems } from '@/redux/selectors'
 import { cn } from '@/lib/utils'
 
 interface WishlistToggleProps {
@@ -26,10 +26,9 @@ interface WishlistToggleProps {
 }
 
 export function WishlistToggle({ product, className, label = 'Save to wishlist' }: WishlistToggleProps) {
-	const dispatch = useDispatch()
-	const isSaved = useSelector((state: RootState) =>
-		state.wishlist.items.some((item) => item.product.slug === product.slug)
-	)
+	const dispatch = useAppDispatch()
+	const items = useAppSelector(selectWishlistItems)
+	const isSaved = items.some((item) => item.product.slug === product.slug)
 
 	return (
 		<button

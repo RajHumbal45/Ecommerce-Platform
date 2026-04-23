@@ -25,34 +25,67 @@ export interface CartHydratePayload {
 	items: unknown[]
 }
 
-export function cartAddItem(payload: CartAddItemPayload) {
+export interface CartAddItemAction {
+	type: typeof CART_ADD_ITEM
+	payload: CartAddItemPayload
+}
+
+export interface CartRemoveItemAction {
+	type: typeof CART_REMOVE_ITEM
+	payload: CartRemoveItemPayload
+}
+
+export interface CartUpdateQuantityAction {
+	type: typeof CART_UPDATE_QUANTITY
+	payload: CartUpdateQuantityPayload
+}
+
+export interface CartClearAction {
+	type: typeof CART_CLEAR
+}
+
+export interface CartHydrateAction {
+	type: typeof CART_HYDRATE
+	payload: CartHydratePayload
+}
+
+export type CartAction =
+	| CartAddItemAction
+	| CartRemoveItemAction
+	| CartUpdateQuantityAction
+	| CartClearAction
+	| CartHydrateAction
+
+export function cartAddItem(payload: CartAddItemPayload): CartAddItemAction {
 	return {
 		type: CART_ADD_ITEM,
 		payload
 	}
 }
 
-export function cartRemoveItem(payload: CartRemoveItemPayload) {
+export function cartRemoveItem(payload: CartRemoveItemPayload): CartRemoveItemAction {
 	return {
 		type: CART_REMOVE_ITEM,
 		payload
 	}
 }
 
-export function cartUpdateQuantity(payload: CartUpdateQuantityPayload) {
+export function cartUpdateQuantity(
+	payload: CartUpdateQuantityPayload
+): CartUpdateQuantityAction {
 	return {
 		type: CART_UPDATE_QUANTITY,
 		payload
 	}
 }
 
-export function cartClear() {
+export function cartClear(): CartClearAction {
 	return {
 		type: CART_CLEAR
 	}
 }
 
-export function cartHydrate(payload: CartHydratePayload) {
+export function cartHydrate(payload: CartHydratePayload): CartHydrateAction {
 	return {
 		type: CART_HYDRATE,
 		payload

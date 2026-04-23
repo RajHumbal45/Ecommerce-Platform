@@ -32,33 +32,59 @@ export interface CheckoutSuccessPayload {
 	order: CheckoutSubmitPayload
 }
 
+export interface CheckoutSubmitAction {
+	type: typeof CHECKOUT_SUBMIT_REQUEST
+	payload: CheckoutSubmitPayload
+}
+
+export interface CheckoutSuccessAction {
+	type: typeof CHECKOUT_SUBMIT_SUCCESS
+	payload: CheckoutSuccessPayload
+}
+
+export interface CheckoutFailureAction {
+	type: typeof CHECKOUT_SUBMIT_FAILURE
+	payload: string
+}
+
+export interface CheckoutHydrateAction {
+	type: typeof CHECKOUT_HYDRATE
+	payload: CheckoutSuccessPayload | null
+}
+
+export type CheckoutAction =
+	| CheckoutSubmitAction
+	| CheckoutSuccessAction
+	| CheckoutFailureAction
+	| CheckoutHydrateAction
+
 export const CHECKOUT_SUBMIT_REQUEST = 'checkout/CHECKOUT_SUBMIT_REQUEST' as const
 export const CHECKOUT_SUBMIT_SUCCESS = 'checkout/CHECKOUT_SUBMIT_SUCCESS' as const
 export const CHECKOUT_SUBMIT_FAILURE = 'checkout/CHECKOUT_SUBMIT_FAILURE' as const
 export const CHECKOUT_HYDRATE = 'checkout/CHECKOUT_HYDRATE' as const
 
-export function checkoutSubmitRequest(payload: CheckoutSubmitPayload) {
+export function checkoutSubmitRequest(payload: CheckoutSubmitPayload): CheckoutSubmitAction {
 	return {
 		type: CHECKOUT_SUBMIT_REQUEST,
 		payload
 	}
 }
 
-export function checkoutSubmitSuccess(payload: CheckoutSuccessPayload) {
+export function checkoutSubmitSuccess(payload: CheckoutSuccessPayload): CheckoutSuccessAction {
 	return {
 		type: CHECKOUT_SUBMIT_SUCCESS,
 		payload
 	}
 }
 
-export function checkoutSubmitFailure(payload: string) {
+export function checkoutSubmitFailure(payload: string): CheckoutFailureAction {
 	return {
 		type: CHECKOUT_SUBMIT_FAILURE,
 		payload
 	}
 }
 
-export function checkoutHydrate(payload: CheckoutSuccessPayload | null) {
+export function checkoutHydrate(payload: CheckoutSuccessPayload | null): CheckoutHydrateAction {
 	return {
 		type: CHECKOUT_HYDRATE,
 		payload

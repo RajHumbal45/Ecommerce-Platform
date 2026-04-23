@@ -4,8 +4,8 @@ import {
 	CART_HYDRATE,
 	CART_REMOVE_ITEM,
 	CART_UPDATE_QUANTITY,
-	type CartAddItemPayload,
-	type CartHydratePayload
+	type CartAction,
+	type CartAddItemPayload
 } from '@/redux/actions/cart/cartAction'
 import type { Product } from '@/data/products'
 
@@ -48,13 +48,31 @@ function isCartItem(value: unknown): value is CartItem {
 		return false
 	}
 
-	const candidate = value as CartItem
+	const candidate = value as {
+		cartKey?: unknown
+		quantity?: unknown
+		selectedVariants?: unknown
+		product?: {
+			slug?: unknown
+			name?: unknown
+			category?: unknown
+			thumbnail?: unknown
+			price?: unknown
+			stock?: unknown
+		}
+	}
 
 	return (
 		typeof candidate.cartKey === 'string' &&
 		typeof candidate.quantity === 'number' &&
+		typeof candidate.selectedVariants === 'object' &&
+		candidate.selectedVariants !== null &&
 		typeof candidate.product?.slug === 'string' &&
-		typeof candidate.product?.name === 'string'
+		typeof candidate.product?.name === 'string' &&
+		typeof candidate.product?.category === 'string' &&
+		typeof candidate.product?.thumbnail === 'string' &&
+		typeof candidate.product?.price === 'number' &&
+		typeof candidate.product?.stock === 'number'
 	)
 }
 
@@ -84,19 +102,11 @@ function sanitizeQuantity(quantity: number, maxStock: number) {
 
 export function cartReducer(
 	state = initialState,
-	action:
-		| { type: string; payload?: CartAddItemPayload | { cartKey: string; quantity: number } }
-		| { type: string; payload?: CartHydratePayload }
+	action: CartAction
 ): CartState {
 	switch (action.type) {
 		case CART_ADD_ITEM: {
-			const payload = action.payload as CartAddItemPayload | undefined
-
-			if (!payload) {
-				return state
-			}
-
-			const nextItem = normalizePayload(payload)
+			const nextItem = normalizePayload(action.payload)
 			const existingItem = state.items.find((item) => item.cartKey === nextItem.cartKey)
 
 			if (existingItem) {
@@ -122,32 +132,20 @@ export function cartReducer(
 			}
 		}
 		case CART_REMOVE_ITEM: {
-			const payload = action.payload as { cartKey: string } | undefined
-
-			if (!payload) {
-				return state
-			}
-
 			return {
 				...state,
-				items: state.items.filter((item) => item.cartKey !== payload.cartKey)
+				items: state.items.filter((item) => item.cartKey !== action.payload.cartKey)
 			}
 		}
 		case CART_UPDATE_QUANTITY: {
-			const payload = action.payload as { cartKey: string; quantity: number } | undefined
-
-			if (!payload) {
-				return state
-			}
-
 			return {
 				...state,
 				items: state.items
 					.map((item) =>
-						item.cartKey === payload.cartKey
+						item.cartKey === action.payload.cartKey
 							? {
 									...item,
-									quantity: sanitizeQuantity(payload.quantity, item.product.stock)
+									quantity: sanitizeQuantity(action.payload.quantity, item.product.stock)
 								}
 							: item
 					)
@@ -157,15 +155,9 @@ export function cartReducer(
 		case CART_CLEAR:
 			return initialState
 		case CART_HYDRATE: {
-			const payload = action.payload as CartHydratePayload | undefined
-
-			if (!payload) {
-				return state
-			}
-
 			return {
 				...state,
-				items: payload.items.filter(isCartItem)
+				items: action.payload.items.filter(isCartItem)
 			}
 		}
 		default:

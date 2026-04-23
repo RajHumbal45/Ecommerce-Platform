@@ -2,12 +2,9 @@ import {
 	WISHLIST_CLEAR,
 	WISHLIST_HYDRATE,
 	WISHLIST_TOGGLE_ITEM,
+	type WishlistAction,
 	type WishlistItemPayload
 } from '@/redux/actions/wishlist/wishlistAction'
-
-export interface WishlistItem extends WishlistItemPayload {
-	isSaved: boolean
-}
 
 export interface WishlistState {
 	items: WishlistItemPayload[]
@@ -22,44 +19,52 @@ function isWishlistItem(value: unknown): value is WishlistItemPayload {
 		return false
 	}
 
-	const candidate = value as WishlistItemPayload
+	const candidate = value as {
+		product?: {
+			slug?: unknown
+			name?: unknown
+			category?: unknown
+			thumbnail?: unknown
+			price?: unknown
+			rating?: unknown
+			reviewCount?: unknown
+			stock?: unknown
+		}
+	}
 
-	return typeof candidate.product?.slug === 'string' && typeof candidate.product?.name === 'string'
+	return (
+		typeof candidate.product?.slug === 'string' &&
+		typeof candidate.product?.name === 'string' &&
+		typeof candidate.product?.category === 'string' &&
+		typeof candidate.product?.thumbnail === 'string' &&
+		typeof candidate.product?.price === 'number' &&
+		typeof candidate.product?.rating === 'number' &&
+		typeof candidate.product?.reviewCount === 'number' &&
+		typeof candidate.product?.stock === 'number'
+	)
 }
 
 export function wishlistReducer(
 	state = initialState,
-	action: { type: string; payload?: WishlistItemPayload | WishlistItemPayload[] }
+	action: WishlistAction
 ): WishlistState {
 	switch (action.type) {
 		case WISHLIST_TOGGLE_ITEM: {
-			const payload = action.payload as WishlistItemPayload | undefined
-
-			if (!payload) {
-				return state
-			}
-
-			const existing = state.items.some((item) => item.product.slug === payload.product.slug)
+			const existing = state.items.some((item) => item.product.slug === action.payload.product.slug)
 
 			return {
 				...state,
 				items: existing
-					? state.items.filter((item) => item.product.slug !== payload.product.slug)
-					: [...state.items, payload]
+					? state.items.filter((item) => item.product.slug !== action.payload.product.slug)
+					: [...state.items, action.payload]
 			}
 		}
 		case WISHLIST_CLEAR:
 			return initialState
 		case WISHLIST_HYDRATE: {
-			const payload = action.payload as WishlistItemPayload[] | undefined
-
-			if (!payload) {
-				return state
-			}
-
 			return {
 				...state,
-				items: payload.filter(isWishlistItem)
+				items: action.payload.filter(isWishlistItem)
 			}
 		}
 		default:

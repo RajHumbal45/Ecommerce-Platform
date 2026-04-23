@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Heart, Menu, Search, ShoppingBag, X } from 'lucide-react'
-import { useSelector } from 'react-redux'
-import type { RootState } from '@/redux/store'
+import { selectCartCount, selectWishlistCount } from '@/redux/selectors'
+import { useAppSelector } from '@/redux/hooks'
 import { cn } from '@/lib/utils'
 
 const navigation = [
@@ -19,10 +19,8 @@ const navigation = [
 export function Header() {
 	const pathname = usePathname()
 	const [menuOpen, setMenuOpen] = useState(false)
-	const cartCount = useSelector((state: RootState) =>
-		state.cart.items.reduce((total, item) => total + item.quantity, 0)
-	)
-	const wishlistCount = useSelector((state: RootState) => state.wishlist.items.length)
+	const cartCount = useAppSelector(selectCartCount)
+	const wishlistCount = useAppSelector(selectWishlistCount)
 
 	const activePath = pathname.startsWith('/products/') ? '/products' : pathname
 

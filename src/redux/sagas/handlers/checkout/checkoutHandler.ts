@@ -3,22 +3,16 @@ import {
 	CHECKOUT_SUBMIT_REQUEST,
 	checkoutSubmitFailure,
 	checkoutSubmitSuccess,
-	type CheckoutSubmitPayload
+	type CheckoutSubmitAction
 } from '@/redux/actions/checkout/checkoutAction'
 import { cartClear } from '@/redux/actions/cart/cartAction'
 import { submitCheckoutRequest } from '@/redux/sagas/requests/checkoutRequest'
 
-function* handleCheckoutSubmit(action: { type: string; payload?: CheckoutSubmitPayload }) {
+function* handleCheckoutSubmit(action: CheckoutSubmitAction) {
 	try {
-		const payload = action.payload
-
-		if (!payload) {
-			throw new Error('Missing checkout payload')
-		}
-
 		const response: Awaited<ReturnType<typeof submitCheckoutRequest>> = yield call(
 			submitCheckoutRequest,
-			payload
+			action.payload
 		)
 
 		yield put(checkoutSubmitSuccess(response))

@@ -3,8 +3,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from '@/redux/store'
 import {
 	cartClear,
 	cartRemoveItem,
@@ -13,20 +11,23 @@ import {
 import { formatCurrency } from '@/lib/format'
 import { formatCategoryLabel } from '@/data/products'
 import { cn } from '@/lib/utils'
-
-const FREE_SHIPPING_THRESHOLD = 100
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import {
+	FREE_SHIPPING_THRESHOLD,
+	selectCartCount,
+	selectCartItems,
+	selectCartShipping,
+	selectCartSubtotal,
+	selectCartTotal
+} from '@/redux/selectors'
 
 export function CartPage() {
-	const dispatch = useDispatch()
-	const items = useSelector((state: RootState) => state.cart.items)
-
-	const subtotal = items.reduce(
-		(total, item) => total + (item.product.discountPrice ?? item.product.price) * item.quantity,
-		0
-	)
-	const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : 12
-	const total = subtotal + shipping
-	const totalItems = items.reduce((count, item) => count + item.quantity, 0)
+	const dispatch = useAppDispatch()
+	const items = useAppSelector(selectCartItems)
+	const subtotal = useAppSelector(selectCartSubtotal)
+	const shipping = useAppSelector(selectCartShipping)
+	const total = useAppSelector(selectCartTotal)
+	const totalItems = useAppSelector(selectCartCount)
 	const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - subtotal, 0)
 
 	return (

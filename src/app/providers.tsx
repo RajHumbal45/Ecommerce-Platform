@@ -1,6 +1,6 @@
 'use client'
 
-import { Provider, useDispatch, useSelector } from 'react-redux'
+import { Provider } from 'react-redux'
 import { useEffect, useRef } from 'react'
 import { makeStore } from '@/redux/store'
 import { cartHydrate } from '@/redux/actions/cart/cartAction'
@@ -9,7 +9,13 @@ import {
 	type CheckoutSuccessPayload
 } from '@/redux/actions/checkout/checkoutAction'
 import { wishlistHydrate } from '@/redux/actions/wishlist/wishlistAction'
-import type { RootState } from '@/redux/store'
+import {
+	selectCartItems,
+	selectCheckoutOrder,
+	selectCheckoutOrderId,
+	selectWishlistItems
+} from '@/redux/selectors'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 
 const CART_STORAGE_KEY = 'ecom-studio-cart'
 const CHECKOUT_STORAGE_KEY = 'ecom-studio-checkout'
@@ -19,15 +25,74 @@ function isCheckoutSuccessPayload(value: unknown): value is CheckoutSuccessPaylo
 	return (
 		typeof value === 'object' &&
 		value !== null &&
-		typeof (value as CheckoutSuccessPayload).orderId === 'string' &&
-		typeof (value as CheckoutSuccessPayload).order === 'object' &&
-		(value as CheckoutSuccessPayload).order !== null
+		typeof (value as { orderId?: unknown }).orderId === 'string' &&
+		typeof (value as { order?: unknown }).order === 'object' &&
+		(value as { order?: unknown }).order !== null
+	)
+}
+
+function isCartHydrationItem(value: unknown) {
+	const candidate = value as {
+		cartKey?: unknown
+		quantity?: unknown
+		selectedVariants?: unknown
+		product?: {
+			slug?: unknown
+			name?: unknown
+			category?: unknown
+			thumbnail?: unknown
+			price?: unknown
+			stock?: unknown
+		}
+	}
+
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		typeof candidate.cartKey === 'string' &&
+		typeof candidate.quantity === 'number' &&
+		typeof candidate.selectedVariants === 'object' &&
+		candidate.selectedVariants !== null &&
+		typeof candidate.product?.slug === 'string' &&
+		typeof candidate.product?.name === 'string' &&
+		typeof candidate.product?.category === 'string' &&
+		typeof candidate.product?.thumbnail === 'string' &&
+		typeof candidate.product?.price === 'number' &&
+		typeof candidate.product?.stock === 'number'
+	)
+}
+
+function isWishlistHydrationItem(value: unknown) {
+	const candidate = value as {
+		product?: {
+			slug?: unknown
+			name?: unknown
+			category?: unknown
+			thumbnail?: unknown
+			price?: unknown
+			rating?: unknown
+			reviewCount?: unknown
+			stock?: unknown
+		}
+	}
+
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		typeof candidate.product?.slug === 'string' &&
+		typeof candidate.product?.name === 'string' &&
+		typeof candidate.product?.category === 'string' &&
+		typeof candidate.product?.thumbnail === 'string' &&
+		typeof candidate.product?.price === 'number' &&
+		typeof candidate.product?.rating === 'number' &&
+		typeof candidate.product?.reviewCount === 'number' &&
+		typeof candidate.product?.stock === 'number'
 	)
 }
 
 function CartPersistence() {
-	const dispatch = useDispatch()
-	const items = useSelector((state: RootState) => state.cart.items)
+	const dispatch = useAppDispatch()
+	const items = useAppSelector(selectCartItems)
 	const hydratedRef = useRef(false)
 
 	useEffect(() => {
@@ -40,7 +105,7 @@ function CartPersistence() {
 
 			const parsed = JSON.parse(storedCart) as unknown
 			if (Array.isArray(parsed)) {
-				dispatch(cartHydrate({ items: parsed }))
+				dispatch(cartHydrate({ items: parsed.filter(isCartHydrationItem) }))
 			}
 		} catch {
 			window.localStorage.removeItem(CART_STORAGE_KEY)
@@ -61,9 +126,9 @@ function CartPersistence() {
 }
 
 function CheckoutPersistence() {
-	const dispatch = useDispatch()
-	const orderId = useSelector((state: RootState) => state.checkout.orderId)
-	const order = useSelector((state: RootState) => state.checkout.order)
+	const dispatch = useAppDispatch()
+	const orderId = useAppSelector(selectCheckoutOrderId)
+	const order = useAppSelector(selectCheckoutOrder)
 	const hydratedRef = useRef(false)
 
 	useEffect(() => {
@@ -105,8 +170,8 @@ function CheckoutPersistence() {
 }
 
 function WishlistPersistence() {
-	const dispatch = useDispatch()
-	const items = useSelector((state: RootState) => state.wishlist.items)
+	const dispatch = useAppDispatch()
+	const items = useAppSelector(selectWishlistItems)
 	const hydratedRef = useRef(false)
 
 	useEffect(() => {
@@ -119,7 +184,7 @@ function WishlistPersistence() {
 
 			const parsed = JSON.parse(storedWishlist) as unknown
 			if (Array.isArray(parsed)) {
-				dispatch(wishlistHydrate(parsed))
+				dispatch(wishlistHydrate(parsed.filter(isWishlistHydrationItem)))
 			}
 		} catch {
 			window.localStorage.removeItem(WISHLIST_STORAGE_KEY)

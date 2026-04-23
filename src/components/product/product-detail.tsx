@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import {
 	ArrowLeft,
 	BadgeCheck,
@@ -19,6 +18,7 @@ import { formatCategoryLabel } from '@/data/products'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { cartAddItem } from '@/redux/actions/cart/cartAction'
+import { useAppDispatch } from '@/redux/hooks'
 import { ProductGrid } from './product-grid'
 import { WishlistToggle } from '@/components/wishlist/wishlist-toggle'
 
@@ -28,7 +28,7 @@ interface ProductDetailProps {
 }
 
 export function ProductDetail({ product, relatedProducts }: ProductDetailProps) {
-	const dispatch = useDispatch()
+	const dispatch = useAppDispatch()
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 	const [quantity, setQuantity] = useState(1)
 	const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>(

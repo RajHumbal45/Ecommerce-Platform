@@ -1,23 +1,36 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowRight, BadgeCheck, ShieldCheck, Truck } from 'lucide-react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from '@/redux/store'
 import { checkoutSubmitRequest } from '@/redux/actions/checkout/checkoutAction'
 import { formatCurrency } from '@/lib/format'
 import { formatCategoryLabel } from '@/data/products'
 import { cn } from '@/lib/utils'
-
-const FREE_SHIPPING_THRESHOLD = 100
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import {
+	selectCartCount,
+	selectCartItems,
+	selectCartShipping,
+	selectCartSubtotal,
+	selectCartTotal,
+	selectCheckoutOrderId,
+	selectCheckoutError,
+	selectCheckoutSubmitting
+} from '@/redux/selectors'
 
 export function CheckoutPage() {
-	const dispatch = useDispatch()
+	const dispatch = useAppDispatch()
 	const router = useRouter()
-	const cartItems = useSelector((state: RootState) => state.cart.items)
-	const checkoutState = useSelector((state: RootState) => state.checkout)
+	const cartItems = useAppSelector(selectCartItems)
+	const itemCount = useAppSelector(selectCartCount)
+	const subtotal = useAppSelector(selectCartSubtotal)
+	const shipping = useAppSelector(selectCartShipping)
+	const total = useAppSelector(selectCartTotal)
+	const orderId = useAppSelector(selectCheckoutOrderId)
+	const isSubmitting = useAppSelector(selectCheckoutSubmitting)
+	const error = useAppSelector(selectCheckoutError)
 
 	const [formData, setFormData] = useState({
 		contactName: '',
@@ -30,28 +43,20 @@ export function CheckoutPage() {
 		shippingMethod: 'Standard'
 	})
 
-	const summary = useMemo(() => {
-		const subtotal = cartItems.reduce(
-			(total, item) => total + (item.product.discountPrice ?? item.product.price) * item.quantity,
-			0
-		)
-		const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : 12
-
-		return {
-			itemCount: cartItems.reduce((count, item) => count + item.quantity, 0),
-			subtotal,
-			shipping,
-			total: subtotal + shipping
-		}
-	}, [cartItems])
+	const summary = {
+		itemCount,
+		subtotal,
+		shipping,
+		total
+	}
 
 	useEffect(() => {
-		if (checkoutState.orderId) {
-			router.push(`/success?order=${checkoutState.orderId}`)
+		if (orderId) {
+			router.push(`/success?order=${orderId}`)
 		}
-	}, [checkoutState.orderId, router])
+	}, [orderId, router])
 
-	const canSubmit = cartItems.length > 0 && !checkoutState.submitting
+	const canSubmit = cartItems.length > 0 && !isSubmitting
 
 	return (
 		<div className='space-y-8'>
@@ -252,9 +257,9 @@ export function CheckoutPage() {
 							</div>
 						</div>
 
-						{checkoutState.error ? (
+						{error ? (
 							<p className='rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'>
-								{checkoutState.error}
+								{error}
 							</p>
 						) : null}
 
@@ -268,7 +273,7 @@ export function CheckoutPage() {
 									: 'cursor-not-allowed bg-zinc-200 text-zinc-500'
 							)}
 						>
-							{checkoutState.submitting ? 'Placing order...' : 'Place order'}
+							{isSubmitting ? 'Placing order...' : 'Place order'}
 						</button>
 					</form>
 
