@@ -68,8 +68,8 @@ export function CartPage() {
 					<div className='space-y-4'>
 						<div className='flex items-center justify-between gap-3'>
 							<div>
-								<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>Items</p>
-								<h2 className='mt-2 text-2xl font-semibold text-zinc-950'>Your cart</h2>
+								
+								<h2 className='mt-2 text-2xl font-semibold text-zinc-950'>My cart</h2>
 							</div>
 							<button
 								type='button'
@@ -207,7 +207,7 @@ export function CartPage() {
 					</div>
 
 					<aside className='space-y-4 lg:sticky lg:top-24'>
-						<div className='rounded-[1.75rem] border border-zinc-200 bg-white p-5 shadow-sm lg:min-h-full'>
+						<div className='rounded-[1.75rem] border border-zinc-200 bg-white p-5 shadow-sm'>
 							<p className='text-xs uppercase tracking-[0.35em] text-zinc-500'>Summary</p>
 							<div className='mt-4 space-y-3 text-sm'>
 								<div className='flex items-center justify-between text-zinc-600'>
