@@ -11,6 +11,10 @@ export function selectCartItemByKey(state: RootState, cartKey: string) {
 }
 
 export function selectCartCount(state: RootState) {
+	return state.cart.items.length
+}
+
+export function selectCartQuantityCount(state: RootState) {
 	return state.cart.items.reduce((total, item) => total + item.quantity, 0)
 }
 

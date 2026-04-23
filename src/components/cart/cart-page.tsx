@@ -18,7 +18,8 @@ import {
 	selectCartItems,
 	selectCartShipping,
 	selectCartSubtotal,
-	selectCartTotal
+	selectCartTotal,
+	selectCartQuantityCount
 } from '@/redux/selectors'
 
 export function CartPage() {
@@ -28,6 +29,7 @@ export function CartPage() {
 	const shipping = useAppSelector(selectCartShipping)
 	const total = useAppSelector(selectCartTotal)
 	const totalItems = useAppSelector(selectCartCount)
+	const totalQuantity = useAppSelector(selectCartQuantityCount)
 	const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - subtotal, 0)
 
 	return (
@@ -45,9 +47,10 @@ export function CartPage() {
 						</p>
 					</div>
 
-					<div className='grid gap-3 sm:grid-cols-3'>
+					<div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
 						{[
 							{ label: 'Items', value: totalItems },
+							{ label: 'Qty', value: totalQuantity },
 							{ label: 'Subtotal', value: formatCurrency(subtotal) },
 							{ label: 'Shipping', value: shipping === 0 ? 'Free' : formatCurrency(shipping) }
 						].map((item) => (
