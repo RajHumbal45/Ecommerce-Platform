@@ -6,6 +6,10 @@ export function selectCartItems(state: RootState) {
 	return state.cart.items
 }
 
+export function selectCartItemByKey(state: RootState, cartKey: string) {
+	return state.cart.items.find((item) => item.cartKey === cartKey)
+}
+
 export function selectCartCount(state: RootState) {
 	return state.cart.items.reduce((total, item) => total + item.quantity, 0)
 }

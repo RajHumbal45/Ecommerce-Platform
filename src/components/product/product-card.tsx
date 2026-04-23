@@ -3,14 +3,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowUpRight, BadgeCheck, Minus, Plus, Star, ShoppingBag } from 'lucide-react'
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import type { Product } from '@/data/products'
 import { formatCategoryLabel } from '@/data/products'
 import { formatCurrency } from '@/lib/format'
 import { WishlistToggle } from '@/components/wishlist/wishlist-toggle'
 import { cartAddItem, cartRemoveItem, cartUpdateQuantity } from '@/redux/actions/cart/cartAction'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { selectCartItems } from '@/redux/selectors'
+import { selectCartItemByKey } from '@/redux/selectors'
 import { cn } from '@/lib/utils'
 
 interface ProductCardProps {
@@ -78,7 +78,7 @@ function HighlightedText({
 	)
 }
 
-export function ProductCard({
+function ProductCardBase({
 	product,
 	featured = false,
 	compact = false,
@@ -86,7 +86,6 @@ export function ProductCard({
 	highlightQuery = ''
 }: ProductCardProps) {
 	const dispatch = useAppDispatch()
-	const cartItems = useAppSelector(selectCartItems)
 	const hasDiscount = typeof product.discountPrice === 'number'
 	const displayPrice: number = product.discountPrice ?? product.price
 	const savings =
@@ -102,7 +101,7 @@ export function ProductCard({
 		() => buildCartKey(product.slug, defaultVariants),
 		[defaultVariants, product.slug]
 	)
-	const cartItem = cartItems.find((item) => item.cartKey === cartKey)
+	const cartItem = useAppSelector((state) => selectCartItemByKey(state, cartKey))
 	const cartQuantity = cartItem?.quantity ?? 0
 	const hasCartItem = cartQuantity > 0
 	const imagePaddingClass = compact ? 'p-2' : 'p-4'
@@ -291,3 +290,5 @@ export function ProductCard({
 		</article>
 	)
 }
+
+export const ProductCard = memo(ProductCardBase)

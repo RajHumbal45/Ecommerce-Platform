@@ -6,8 +6,7 @@ import { ArrowRight, Filter, Menu, X } from 'lucide-react'
 import type { Product, ProductSortKey } from '@/data/products'
 import {
 	filterAndSortProducts,
-	getCategories,
-	getProductCountByCategory
+	getCategories
 } from '@/data/products'
 import { formatCategoryLabel } from '@/data/products'
 import { cn } from '@/lib/utils'
@@ -130,7 +129,14 @@ export function CatalogBrowser({
 		router.replace(nextUrl, { scroll: false })
 	}, [category, pathname, query, router, sort])
 
-	const categories = getCategories(products)
+	const categories = useMemo(() => getCategories(products), [products])
+	const categoryCountMap = useMemo(() => {
+		return products.reduce<Record<string, number>>((counts, product) => {
+			const key = product.category.toLowerCase()
+			counts[key] = (counts[key] ?? 0) + 1
+			return counts
+		}, {})
+	}, [products])
 	const filteredProducts = useMemo(
 		() =>
 			filterAndSortProducts(products, { query: deferredQuery, category, sort }).filter((product) => {
@@ -153,10 +159,6 @@ export function CatalogBrowser({
 		category === 'all'
 			? 'All categories'
 			: formatCategoryLabel(categories.find((item) => item.toLowerCase() === category) ?? category)
-	const activeLabel =
-		category === 'all'
-			? 'All products'
-			: `${selectedCategoryLabel} (${getProductCountByCategory(products, category)})`
 	const currentSortLabel =
 		sortOptions.find((option) => option.value === sort)?.label ?? 'Featured'
 	const priceFilterLabel =
@@ -290,7 +292,7 @@ export function CatalogBrowser({
 										...categories.map((item) => ({
 											key: item.toLowerCase(),
 											label: formatCategoryLabel(item),
-											count: getProductCountByCategory(products, item)
+											count: categoryCountMap[item.toLowerCase()] ?? 0
 										}))
 									].map((item) => (
 										<button
@@ -543,14 +545,14 @@ export function CatalogBrowser({
 									<span className='text-xs text-zinc-400'>{selectedCategoryLabel}</span>
 								</div>
 								<div className='grid gap-2'>
-									{[
-										{ key: 'all', label: 'All categories', count: products.length },
-										...categories.map((item) => ({
-											key: item.toLowerCase(),
-											label: formatCategoryLabel(item),
-											count: getProductCountByCategory(products, item)
-										}))
-									].map((item) => (
+										{[
+											{ key: 'all', label: 'All categories', count: products.length },
+											...categories.map((item) => ({
+												key: item.toLowerCase(),
+												label: formatCategoryLabel(item),
+												count: categoryCountMap[item.toLowerCase()] ?? 0
+											}))
+										].map((item) => (
 										<button
 											key={item.key}
 											type='button'

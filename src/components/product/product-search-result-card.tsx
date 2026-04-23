@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { BadgeCheck, Minus, Plus, ShoppingBag, ShieldCheck, Star } from 'lucide-react'
 import type { Product } from '@/data/products'
 import { formatCategoryLabel } from '@/data/products'
@@ -10,7 +10,7 @@ import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { cartAddItem, cartRemoveItem, cartUpdateQuantity } from '@/redux/actions/cart/cartAction'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { selectCartItems } from '@/redux/selectors'
+import { selectCartItemByKey } from '@/redux/selectors'
 import { WishlistToggle } from '@/components/wishlist/wishlist-toggle'
 
 function getDefaultVariants(product: Product) {
@@ -67,12 +67,11 @@ interface ProductSearchResultCardProps {
 	query?: string
 }
 
-export function ProductSearchResultCard({ product, query = '' }: ProductSearchResultCardProps) {
+function ProductSearchResultCardBase({ product, query = '' }: ProductSearchResultCardProps) {
 	const dispatch = useAppDispatch()
-	const cartItems = useAppSelector(selectCartItems)
 	const defaultVariants = useMemo(() => getDefaultVariants(product), [product])
 	const cartKey = useMemo(() => buildCartKey(product.slug, defaultVariants), [defaultVariants, product.slug])
-	const cartItem = cartItems.find((item) => item.cartKey === cartKey)
+	const cartItem = useAppSelector((state) => selectCartItemByKey(state, cartKey))
 	const cartQuantity = cartItem?.quantity ?? 0
 	const hasCartItem = cartQuantity > 0
 	const hasDiscount = typeof product.discountPrice === 'number'
@@ -226,3 +225,5 @@ export function ProductSearchResultCard({ product, query = '' }: ProductSearchRe
 		</article>
 	)
 }
+
+export const ProductSearchResultCard = memo(ProductSearchResultCardBase)

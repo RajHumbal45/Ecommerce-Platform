@@ -19,7 +19,7 @@ import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { cartAddItem, cartRemoveItem, cartUpdateQuantity } from '@/redux/actions/cart/cartAction'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { selectCartItems } from '@/redux/selectors'
+import { selectCartItemByKey } from '@/redux/selectors'
 import { WishlistToggle } from '@/components/wishlist/wishlist-toggle'
 
 interface ProductDetailProps {
@@ -45,7 +45,6 @@ function buildCartKey(productSlug: string, selectedVariants: Record<string, stri
 
 export function ProductDetail({ product, relatedProducts }: ProductDetailProps) {
 	const dispatch = useAppDispatch()
-	const cartItems = useAppSelector(selectCartItems)
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
 	const selectedImage = product.images[selectedImageIndex] ?? product.images[0]
@@ -56,7 +55,7 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
 
 	const defaultVariants = useMemo(() => getDefaultVariants(product), [product])
 	const cartKey = useMemo(() => buildCartKey(product.slug, defaultVariants), [defaultVariants, product.slug])
-	const cartItem = cartItems.find((item) => item.cartKey === cartKey)
+	const cartItem = useAppSelector((state) => selectCartItemByKey(state, cartKey))
 	const cartQuantity = cartItem?.quantity ?? 0
 	const hasCartItem = cartQuantity > 0
 
